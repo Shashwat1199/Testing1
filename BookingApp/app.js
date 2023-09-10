@@ -3,7 +3,7 @@ const nameInput = document.querySelector('#name');
 const emailInput = document.querySelector('#email');
 const msg = document.querySelector('.msg');
 const userList = document.querySelector('#users');
-
+var items = [];
 // Listen for form submit
 myForm.addEventListener('submit', onSubmit);
 
@@ -25,15 +25,18 @@ function onSubmit(e) {
     li.appendChild(document.createTextNode(`${nameInput.value}  ${emailInput.value}`));
 
     // Append to ul
-    userList.appendChild(li);
-
-    let myObj = {
+    userList.appendChild(li);     
+  
+    //Adding more than one users
+     let myObj = {
       name : nameInput.value,
       email : emailInput.value
     };
-    //Adding to Local storage
-    localStorage.setItem('myObj',JSON.stringify(myObj));  
-
+        
+      items.push(myObj);
+      localStorage.setItem("item", JSON.stringify(items));
+  
+  
     // Clear fields
     nameInput.value = '';
     emailInput.value = '';
