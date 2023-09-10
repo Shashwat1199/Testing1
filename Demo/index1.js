@@ -1,17 +1,20 @@
 var form = document.getElementById('addForm');
 var itemList = document.getElementById('items');
+var filter = document.getElementById('filter');
 
 // Form submit event
 form.addEventListener('submit', addItem);
 // Delete event
 itemList.addEventListener('click', removeItem);
-
+// Filter event
+filter.addEventListener('keyup', filterItems);
 // Add item
+
 function addItem(e){
   e.preventDefault();
 
   // Get input value
-  var newItem = document.getElementById('item').value;
+  var newItem = document.getElementById('item').value + " " + document.getElementById('description').value;
 
   // Create new li element
   var li = document.createElement('li');
@@ -19,6 +22,16 @@ function addItem(e){
   li.className = 'list-group-item';
   // Add text node with input value
   li.appendChild(document.createTextNode(newItem));
+
+    //edit button
+    var editBtn = document.createElement('button');
+
+    // Add classes to edit button
+    editBtn.className = 'btn btn-primary btn-sm float-right edit';
+    editBtn.appendChild(document.createTextNode('E'));
+  
+    // Append button to li
+    li.appendChild(editBtn);
 
   // Create del button element
   var deleteBtn = document.createElement('button');
@@ -34,6 +47,7 @@ function addItem(e){
 
   // Append li to list
   itemList.appendChild(li);
+
 }
 
 // Remove item
@@ -44,12 +58,19 @@ function removeItem(e){
   }
 }
 
-var li = document.createElement('li');
-var editBtn = document.createElement('button');
-
-  // Add classes to edit button
-  editBtn.className = 'btn btn-primary btn-sm float-right edit';
-
-  // Append button to li
-  li.appendChild(editBtn);
-
+// Filter Items
+function filterItems(e){ 
+    // convert text to lowercase
+    var text = e.target.value.toLowerCase();
+    // Get list
+    var items = itemList.getElementsByTagName('li');
+    // Convert to an array
+    Array.from(items).forEach(function(item){
+      var itemName = item.firstChild.textContent;
+      if(itemName.toLowerCase().indexOf(text) != -1){
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  }
