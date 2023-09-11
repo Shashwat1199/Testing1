@@ -8,6 +8,9 @@ var items = [];
 myForm.addEventListener('submit', onSubmit);
 //Delete an element
 userList.addEventListener('click', removeItem);
+//edit an item
+userList.addEventListener('click', editItem);
+
 let myObj;
 function onSubmit(e) {
   e.preventDefault();
@@ -49,7 +52,17 @@ function onSubmit(e) {
   // Append button to li
      li.appendChild(deleteBtn);
 
-   
+    //Edit Button 
+     var editBtn = document.createElement('button');
+
+     // Add classes to edit button
+     editBtn.className = 'btn btn-primary btn-sm float-right delete';
+
+  // Append text node
+     editBtn.appendChild(document.createTextNode('Edit'));
+
+  // Append button to li
+     li.appendChild(editBtn);
   // Append li to list
    //  itemList.appendChild(li);
   
@@ -62,6 +75,18 @@ function removeItem(e){
       var li = e.target.parentElement;      
       localStorage.removeItem(myObj.email);
       userList.removeChild(li);       
+      //localStorage.clear()
+  }
+}
+  // Edit item
+function editItem(e){ 
+  if(e.target.classList.contains('edit')){
+    
+      
+      var li = e.target.parentElement;      
+      localStorage.removeItem(myObj.email);
+      userList.removeChild(li);     
+      onSubmit(e);  
       //localStorage.clear()
   }
 }
