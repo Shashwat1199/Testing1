@@ -6,7 +6,9 @@ const userList = document.querySelector('#users');
 var items = [];
 // Listen for form submit
 myForm.addEventListener('submit', onSubmit);
-
+//Delete an element
+userList.addEventListener('click', removeItem);
+let myObj;
 function onSubmit(e) {
   e.preventDefault();
   
@@ -22,23 +24,44 @@ function onSubmit(e) {
     const li = document.createElement('li');
 
     // Add text node with input values
-    li.appendChild(document.createTextNode(`${nameInput.value}  ${emailInput.value}`));
+    li.appendChild(document.createTextNode(`${nameInput.value}  ${emailInput.value}` ));
 
     // Append to ul
     userList.appendChild(li);     
   
     //Adding more than one users
-     let myObj = {
+     myObj = {
       name : nameInput.value,
       email : emailInput.value
     };
         
-      items.push(myObj);
-      localStorage.setItem("item", JSON.stringify(items));
+     localStorage.setItem(myObj.email, JSON.stringify(myObj));
+     
+        // Create del button element
+      var deleteBtn = document.createElement('button');
+
+     // Add classes to del button
+     deleteBtn.className = 'btn btn-danger btn-sm float-right delete';
+
+  // Append text node
+     deleteBtn.appendChild(document.createTextNode('X'));
+
+  // Append button to li
+     li.appendChild(deleteBtn);
+
+   
+  // Append li to list
+   //  itemList.appendChild(li);
   
-  
-    // Clear fields
-    nameInput.value = '';
-    emailInput.value = '';
+  }
+}
+// Remove item
+function removeItem(e){
+  if(e.target.classList.contains('delete')){
+    
+      var li = e.target.parentElement;      
+      localStorage.removeItem(myObj.email);
+      userList.removeChild(li);       
+      //localStorage.clear()
   }
 }
