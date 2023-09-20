@@ -8,13 +8,11 @@ let li;
 myForm.addEventListener('submit', onSubmit);
 //Delete an element
 userList.addEventListener('click', removeItem);
-//Delete from cloud storage
-//userList.addEventListener('click', removeFromCloud);
-//edit an item
+//Edit item
 userList.addEventListener('click', editItem);
 
 window.addEventListener('DOMContentLoaded',()=>{
-    axios.get('https://crudcrud.com/api/9f269f43c52442c8887cd5c6912fd766/BooKAppointment')
+    axios.get('https://crudcrud.com/api/637f512102e44eb8ac2c326ce4038638/BooKAppointment')
     .then((response)=>{
         for(var i = 0;i<response.data.length;i++)
         {
@@ -101,7 +99,7 @@ function onSubmit(e) {
       email : emailInput.value
     };
         
-    axios.post('https://crudcrud.com/api/9f269f43c52442c8887cd5c6912fd766/BookAppointment',myObj)
+    axios.post('https://crudcrud.com/api/637f512102e44eb8ac2c326ce4038638/BookAppointment',myObj)
     .then((response)=>{
         //console.log(response);
     })
@@ -121,11 +119,12 @@ function onSubmit(e) {
     // Append button to li
     li.appendChild(deleteBtn);
 
+
     //Edit Button 
     var editBtn = document.createElement('button');
 
     // Add classes to edit button
-     editBtn.className = 'btn btn-primary btn-sm float-right delete';
+     editBtn.className = 'btn btn-primary btn-sm float-right edit';
 
     // Append text node
      editBtn.appendChild(document.createTextNode('Edit'));
@@ -135,15 +134,14 @@ function onSubmit(e) {
       
   }
 }
+
 // Remove item
 function removeItem(e){
     
-    var email = ''
     if(e.target.classList.contains('delete')){
     var li = e.target.parentElement;      
     var str = (li.textContent);
-    var name = '';
-    var j;
+    var j;let name = '';let email = ''
     for(var i = 0;i<str.length;i++)
     {
         if(str[i] == '-')
@@ -158,7 +156,7 @@ function removeItem(e){
       }         
     }
     userList.removeChild(li);
-    axios.get('https://crudcrud.com/api/9f269f43c52442c8887cd5c6912fd766/BooKAppointment')
+    axios.get('https://crudcrud.com/api/637f512102e44eb8ac2c326ce4038638/BooKAppointment')
     .then((res) =>{
       console.log(res.data[0]);
         for(var i = 0;i<res.data.length;i++)
@@ -168,9 +166,8 @@ function removeItem(e){
             {
             console.log("Gone inside")
             const val = res.data[i]._id;
-            axios.delete(`https://crudcrud.com/api/9f269f43c52442c8887cd5c6912fd766/BooKAppointment/${val}`)
-            .then((res)=>{
-            
+            axios.delete(`https://crudcrud.com/api/637f512102e44eb8ac2c326ce4038638/BooKAppointment/${val}`)
+            .then((res)=>{            
             })
             .catch((error)=>
             {
@@ -180,17 +177,53 @@ function removeItem(e){
         }
         }
     })
-    //axios.delete()
     }
 }
 
 // Edit item
 function editItem(e){ 
      
-    if(e.target.classList.contains('edit')){    
-    var li = e.target.parentElement;      
-    //localStorage.removeItem(myObj.email);
-    //userList.removeChild(li);     
-    //onSubmit(e);  
-    }
+    if(e.target.classList.contains('edit')){
+        var li = e.target.parentElement;      
+        var str = (li.textContent);
+        var j;var name = '';var email = ''
+        for(var i = 0;i<str.length;i++)
+        {
+            if(str[i] == '-')
+          {
+            name = str.substring(0,i)
+            j = i + 1;
+            while(j<str.length && str[j] != ' ')
+            {      
+            email = email + str[j]; 
+            j++; 
+            } 
+          }         
+        }
+        
+        document.getElementById('name').value = name;
+        document.getElementById('email').value = email;
+        userList.removeChild(li);         
+        axios.get('https://crudcrud.com/api/637f512102e44eb8ac2c326ce4038638/BooKAppointment')
+        .then((res) =>{
+          console.log(res.data[0]);
+            for(var i = 0;i<res.data.length;i++)
+            {
+                //console.log(res.data[0])
+                if(res.data[i].email === email)
+                {
+                console.log("Gone inside edit")
+                const val = res.data[i]._id;
+                axios.delete(`https://crudcrud.com/api/637f512102e44eb8ac2c326ce4038638/BooKAppointment/${val}`)
+                .then((res)=>{            
+                })
+                .catch((error)=>
+                {
+                    console.log(error)
+                })
+                break;
+            }
+            }
+        })                
+       }
 }
