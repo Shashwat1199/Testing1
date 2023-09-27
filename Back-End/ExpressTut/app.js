@@ -7,23 +7,21 @@ const bodyParser = require('body-parser');
 app.use(express.static(path.join(__dirname,'public'))) //This forwards any request for static .css or .js file to public folder and our navigation will be followed from there
 
 
-const adminRouter= require('./routes/admin')
-const shopRouter= require('./routes/shop')
-const contactRouter = require('./routes/contact')
-const successRouter = require('./routes/success')
+const admin = require('./routes/admin')
+const shop = require('./routes/shop')
+const contact = require('./routes/contact')
+const success = require('./routes/success')
+
+const errorController = require('./controllers/error')
 
 app.use(bodyParser.urlencoded({extended:false}));
 
-app.use(adminRouter); 
-app.use(shopRouter);
-app.use(contactRouter);
-app.use(successRouter);
+app.use(admin); 
+app.use(shop);
+app.use(contact);
+app.use(success);
 
-
-app.use((req,res)=>{
-   
-    res.status(404).sendFile(path.join(__dirname, 'views','error.html'));
-})
+app.use(errorController.get404)
 
 app.listen(port,()=>{
 
