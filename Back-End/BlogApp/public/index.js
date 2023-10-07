@@ -9,7 +9,6 @@ myForm.addEventListener('submit', onSubmit1);
 
 userList.addEventListener('click', removeItem);
 
-userList.addEventListener('click', editItem);
 
 window.addEventListener('DOMContentLoaded',()=>{
     axios.get('http://localhost:3000/post/get-posts')
@@ -134,10 +133,10 @@ function removeItem(e){
     var myObj = {
       // image : imageInput.value,
       // description : descriptionInput.value,
-      comments : cval.value
+      comment : cval.value
     };
     //console.log(myObj);    
-    axios.post("http://localhost:3000/post/add-post",myObj)
+    axios.post("http://localhost:3000/post/add-comment",myObj)
     .then((response)=>{
       console.log("Gone inside ");        
       console.log("Reached at last line");
