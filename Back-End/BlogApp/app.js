@@ -20,6 +20,6 @@ Post.hasMany(Comment,{
     foreignKey : 'postId',
 });
 
-sequelize.sync({alter:true})
+sequelize.sync({force:true})
 
 app.listen(3000);
