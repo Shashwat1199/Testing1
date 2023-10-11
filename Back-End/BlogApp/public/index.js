@@ -5,17 +5,14 @@ const msg = document.querySelector('.msg');
 const userList = document.querySelector('#users');
 let li;var toAppend;let data; let cform;
 
-myForm.addEventListener('submit', onSubmit1);
-
-userList.addEventListener('click', removeItem);
-
+myForm.addEventListener('submit', onSubmit1);   
 
 window.addEventListener('DOMContentLoaded',()=>{
     axios.get('http://localhost:3000/post/get-posts')
     .then((response)=>{
      
-      for(var i = 0;i<response.data.allRecords.length;i++){            
-            showSavedUserOnScreen(response.data.allRecords[i]);
+    for(var i = 0;i<response.data.allPosts.length;i++){            
+        showSavedUserOnScreen(response.data.allPosts[i]);
         }
     })
     .catch((error)=>{
@@ -26,42 +23,73 @@ window.addEventListener('DOMContentLoaded',()=>{
 function showSavedUserOnScreen(user)
 {
 
-    if(user.image == '' || user.description == '') {
+    if(user.imageURL == '' || user.description == '') {
         
         msg.classList.add('error');
         msg.innerHTML = 'Please enter all fields';
     
-        //Remove error after 3 seconds
         setTimeout(() => msg.remove(), 3000);
       } else {
         
-        li = document.createElement('li');    
+        var li = document.createElement('li');    
                
-        userList.appendChild(li);                      
+        userList.appendChild(li);         
+ 
+        var img = document.createElement('img');
+        img.src = user.imageURL;
         
-        var deleteBtn = document.createElement('button');    
+        li.appendChild(img)      
         
-        deleteBtn.className = 'btn btn-danger btn-sm float-right delete';
-    
-        deleteBtn.appendChild(document.createTextNode('Comment'));
+        li.appendChild(document.createTextNode(`${user.description} ` ));
 
-        li.appendChild(deleteBtn);
-   
+        userList.appendChild(li); 
+
+        var comentBtn = document.createElement('button');
+        
+        comentBtn.className = 'btn btn-danger btn-sm float-right comment';
+        comentBtn.id = 'myLocation'
+        comentBtn.appendChild(document.createTextNode('Comment'));
+    
+        li.appendChild(comentBtn);
+         
+        axios.get('http://localhost:3000/post/get-comments')
+        .then((response1)=>{
+         
+        for(var i = 0;i<response1.data.allComments.length;i++){            
+                    
+        if(response1.data.allComments[i].postId == user.id)
+        {
+          const cvall = response1.data.allComments[i].content;
+          li.appendChild(document.createTextNode(`Anonymous User : ${cvall } ` ));  
+          li.appendChild(document.createElement('br')); 
+          userList.appendChild(li);      
+        }
+       }
+        })
+        .catch((error)=>{
+            console.log(error);
+        }) 
+       
+        var postId = user.id;
+        
+        comentBtn.addEventListener('click', function(e){  
+        //console.log("Values coming" + e.target)
+        removeItem(e,postId)
+        }); 
       }
 }
 
 function onSubmit1(e) {
   e.preventDefault();
-  
+  var postId;
   if(imageInput.value == '' || descriptionInput.value == '') {
-    // alert('Please enter all fields');
+    
     msg.classList.add('error');
     msg.innerHTML = 'Please enter all fields';
 
-    // Remove error after 3 seconds
     setTimeout(() => msg.remove(), 3000);
   } else {
-    // Create new list item with user
+ 
     li = document.createElement('li');
  
     var img=document.createElement('img');
@@ -69,73 +97,79 @@ function onSubmit1(e) {
  
     li.appendChild(img)
 
-    // Add text node with input values
     li.appendChild(document.createTextNode(`${descriptionInput.value} ` ));
 
-    // Append to ul
     userList.appendChild(li);     
   
-    //Adding more than one users
     var myObj = {
       image : imageInput.value,
       description : descriptionInput.value,
-      //comments : cval.value
     };
-    //console.log(myObj);    
+    
     axios.post("http://localhost:3000/post/add-post",myObj)
     .then((response)=>{
-      console.log("Gone inside ");        
-      console.log("Reached at last line");
+      console.log("Gone inside ");           
+      postId = response.data.newPostDetail.id;
+      console.log(postId);  
     })
     .catch((err)=>{
         console.log("Coming in error block " +err);
     })
 
     
-    var deleteBtn = document.createElement('button');
+    var comentBtn = document.createElement('button');
 
-    deleteBtn.className = 'btn btn-danger btn-sm float-right delete';
-    deleteBtn.id = 'myLocation'
-    deleteBtn.appendChild(document.createTextNode('Comment'));
+    comentBtn.className = 'btn btn-danger btn-sm float-right comment';
+    comentBtn.id = 'myLocation'
+    comentBtn.appendChild(document.createTextNode('Comment'));
 
-    li.appendChild(deleteBtn);
-     
+    li.appendChild(comentBtn);
+    
+    comentBtn.addEventListener('click', function(e){
+
+    removeItem(e,postId)
+    });
   }
 }
 
-function removeItem(e){
-    
-  if(e.target.classList.contains('delete')){
-  var li = e.target.parentElement; 
-  //console.log(e.target.id)  
+function removeItem(e,postId){
+
+  e.preventDefault();  
+  if(e.target.classList.contains('comment')){
+  var li = e.target.parentElement;  
   
   data = "<form id = 'c-form'><div> Comment:<input type = 'text' id = 'comment' name = 'comments'</div><br><br> <input type = 'submit' id = 'bitn' value = 'Post Comment' ></form>";
-  document.getElementById("myLocation").innerHTML = data;
-  toAppend = document.getElementById("myLocation")  
-  li.appendChild(toAppend);
-  cform = document.querySelector("#c-form")
-  cform.addEventListener('submit', onSubmit2);
+  const cresult  = document.createElement('div')
+  cresult.innerHTML = data;
+
+  li.appendChild(cresult);
+  cform = cresult.querySelector("#c-form")
   
+  cform.addEventListener('submit',function(e){
+  e.preventDefault();
+  console.log("Coming here")
+  onSubmit2(e,postId)
+  })   
   }
 }
 
- //let store = [];
- function onSubmit2(e)
+
+ function onSubmit2(e,postId)
   {
     e.preventDefault();
     var com = document.getElementById("c-form"); 
     var cval = com.querySelector('#comment');
+  
     li.appendChild(document.createTextNode(`Anonymous User : ${cval.value } ` ));  
     li.appendChild(document.createElement('br'));
-    
-    //store.push(cval.value);
 
+    console.log("thats postId" + postId)
+    
     var myObj = {
-      // image : imageInput.value,
-      // description : descriptionInput.value,
-      comment : cval.value
+    comment : cval.value,
+    id : postId
     };
-    //console.log(myObj);    
+        
     axios.post("http://localhost:3000/post/add-comment",myObj)
     .then((response)=>{
       console.log("Gone inside ");        
@@ -149,49 +183,3 @@ function removeItem(e){
 
 
 
-// Edit item
-// function editItem(e){ 
-     
-//     if(e.target.classList.contains('edit')){
-//         var li = e.target.parentElement;      
-//         var str = (li.textContent);
-//         var j;var amount = 0;var description = '';
-//         for(var i = 0;i<str.length;i++)
-//         {
-//             if(str[i] == '-')
-//           {
-//             amount = str.substring(0,i)
-//             j = i + 1;
-//             while(j<str.length && str[j] != ' ')
-//             {      
-//            description = description + str[j]; 
-//             j++; 
-//             } 
-//           }         
-//         }
-        
-//         document.getElementById('amount').value = amount;
-//         document.getElementById('description').value = description;
-//         userList.removeChild(li);         
-//         axios.get('http://localhost:3000/user/get-users')
-//         .then((res) =>{
-          
-//             for(var i = 0;i<res.data.allRecords.length;i++)
-//             {                
-//                 if(res.data.allRecords[i].description == description)
-//                 {
-//                 console.log("Gone inside edit")
-//                 const val = res.data.allRecords[i].id;
-//                 axios.delete(`http://localhost:3000/user/delete-user/${val}`)
-//                 .then((res)=>{            
-//                 })
-//                 .catch((error)=>
-//                 {
-//                     console.log(error)
-//                 })
-//                 break;
-//             }
-//             }
-//         })                
-//       }
-//     }

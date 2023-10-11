@@ -11,8 +11,9 @@ const Comment = sequelize.define('comment', {
     }, 
     content:{
       type : Sequelize.STRING,
-      allowNull : true
+      allowNull : false
     }
+    
 });
 
 module.exports = Comment;

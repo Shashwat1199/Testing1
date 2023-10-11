@@ -2,11 +2,11 @@ const Post = require('../models/user');
 
 exports.getUser = async(req,res,next)=>{   
   try{
-      const posts = await Post.findAll();      
-      res.status(200).json({allPosts:posts});
+    const posts = await Post.findAll();      
+    res.status(200).json({allPosts:posts});
   }
   catch(error){
-      console.log("Didn't hit "+ error);
+    console.log("Didn't hit "+ error);
   }
 };
   
@@ -15,9 +15,11 @@ exports.postUser = async(req,res)=>{
     try{
     const imageURL = req.body.image;
     const description = req.body.description; 
+   
     console.log(imageURL + " " + description);
     try{
     const data = await Post.create({imageURL : imageURL, description : description})
+    //data.then(result)
     console.log("User Created! This worked")
     res.status(200).json({newPostDetail:data});         
     }

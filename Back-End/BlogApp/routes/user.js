@@ -11,6 +11,8 @@ router.post('/post/add-post', userController.postUser);
 
 router.post('/post/add-comment', commentController.postComment);
 
+router.get('/post/get-comments', commentController.getComment);
+
 router.delete('/user/delete-post/:id', userController.deleteUser);
 
 

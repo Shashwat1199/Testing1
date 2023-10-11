@@ -16,7 +16,7 @@ const Post = sequelize.define('post',{
   description : {
     type :  Sequelize.STRING,
     allowNull : false
-  }
-  });  
-
-module.exports = Post;  
+  },
+  
+ })
+ module.exports = Post;  
