@@ -41,8 +41,9 @@ function onSubmit(e)
         email : email,
         password : password
     };
-
-    axios.post("http://localhost:3000/user/sign-up",myObj)
+    
+    console.log(myObj)
+    axios.post("http://localhost:3000/user/sign-up", myObj) 
     .then((response)=>{
        console.log("Gone inside ");      
       
