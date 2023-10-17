@@ -3,10 +3,10 @@ const forms = document.querySelector(".forms"),
       links = document.querySelectorAll(".link");
 
 const myForm1 = document.querySelector('#my-form');      
-myForm1.addEventListener('submit', onSubmit);
+myForm1.addEventListener('submit', onSubmit1);
 
 const myForm2 = document.querySelector('#login-form');      
-myForm2.addEventListener('submit', onSubmit);
+myForm2.addEventListener('submit', onSubmit2);
 
 pwShowHide.forEach(eyeIcon => {
     eyeIcon.addEventListener("click", () => {
@@ -32,7 +32,7 @@ links.forEach(link => {
     })
 })
 
-function onSubmit(e)
+function onSubmit1(e)
 {
     e.preventDefault();
     const name = e.target.name.value;
@@ -56,13 +56,14 @@ function onSubmit(e)
     }) 
 }
 
-function onSubmit(e)
+function onSubmit2(e)
 {
     e.preventDefault();
 
     const email = e.target.email.value;
     const password = e.target.password.value;
-    
+     
+    console.log(email);
     const myObj = {
         email : email,
         password : password

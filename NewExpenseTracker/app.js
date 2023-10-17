@@ -15,7 +15,8 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(signupRoute)
-  
+app.use(signinRoute)
+
 sequelize.sync({ alter : true });
 
 app.listen(3000,()=>{
