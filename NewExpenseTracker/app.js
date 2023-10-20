@@ -7,6 +7,7 @@ var cors = require('cors');
 
 const signupRoute = require('./routers/sign-up')
 const signinRoute = require('./routers/sign-in')
+const expense = require('./routers/expense')
 
 app.use(cors());
 
@@ -16,6 +17,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(signupRoute)
 app.use(signinRoute)
+app.use(expense)
 
 sequelize.sync({ alter : true });
 

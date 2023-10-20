@@ -72,6 +72,8 @@ function onSubmit2(e)
     console.log(myObj)
     axios.post("http://localhost:3000/user/sign-in", myObj) 
     .then((response)=>{
+       alert(response.data.message)
+       window.location.href = "../views/index.html" 
        console.log("Gone inside Login ");     
       
     })
