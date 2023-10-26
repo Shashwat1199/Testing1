@@ -73,6 +73,8 @@ function onSubmit2(e)
     axios.post("http://localhost:3000/user/sign-in", myObj) 
     .then((response)=>{
        alert(response.data.message)
+       alert(response.data.token);
+       localStorage.setItem('token', response.data.token)
        window.location.href = "../views/index.html" 
        console.log("Gone inside Login ");     
       

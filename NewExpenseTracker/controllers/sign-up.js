@@ -1,6 +1,5 @@
 const User = require('../models/sign-up');
 const bcrypt = require('bcrypt');
-
 function isstringInvalid(string)
   {
     if(string == undefined || string.length == 0)

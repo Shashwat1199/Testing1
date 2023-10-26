@@ -7,41 +7,16 @@ const text = document.getElementById('text');
 const categ = document.getElementById('categ');
 const amount = document.getElementById('amount');
 let totalPrice = 0;
-// const localStorageTransactions = JSON.parse(
-//     localStorage.getItem('transactions')
-// );
+let income = 0;
+let expense = 0;
 
-// let transactions =
-//     localStorage.getItem('transactions') !== null ? localStorageTransactions : [];
 
 //DOM content loaded
 window.addEventListener('DOMContentLoaded',()=>{
-        axios.get('http://localhost:3000/expense/get-expenses')
-        .then((response)=>{
-          for(var i = 0;i<response.data.allExpenses.length;i++)
-             totalPrice += Number(response.data.allExpenses[i].amount);
-    
-             updateValues(totalPrice)
 
-          for(var i = 0;i<response.data.allExpenses.length;i++){ 
-                console.log(response.data.allExpenses[i])           
-                addTransactionDOM(response.data.allExpenses[i]);
-            }
-        })
-        .catch((error)=>{
-            console.log(error);
-        })
-    });
+   onload();
+});
 
-// Init app
-// function init() {
-//     list.innerHTML = '';
-
-//     transactions.forEach(addTransactionDOM);
-//     updateValues();
-// }
-
-// init();
 
 // Add transaction
 function addTransaction(e) {
@@ -51,17 +26,17 @@ function addTransaction(e) {
         alert('Please add all fields');
     } else {
         const transaction = {
-            // id: generateID(),
+            //id: generateID(),
             description: text.value,
             amount: +amount.value,
             category: categ.value
         };
 
-        // transactions.push(transaction);
-
-    axios.post("http://localhost:3000/expense/add-expense", transaction)
+        
+    const token = localStorage.getItem('token')
+    axios.post("http://localhost:3000/expense/add-expense", transaction, {headers : {"Authorization": token}})
     .then((response)=>{
-       console.log("POST Request done ");        
+       console.log("POST Request done Respone >> " + JSON.stringify(response));        
      //console.log("Reached at last line");
     })
     .catch((err)=>{
@@ -69,10 +44,6 @@ function addTransaction(e) {
     }) 
 
         addTransactionDOM(transaction);
-
-        //updateValues();
-
-        //updateLocalStorage();
 
         text.value = '';
         amount.value = '';
@@ -99,7 +70,7 @@ function addTransactionDOM(transaction) {
     ${transaction.description} <span>${sign}${Math.abs(
         transaction.amount 
     )} <span>${transaction.category}
-    </span> <button class="delete-btn" onclick="removeTransaction(${transaction.id
+    </span> <button class="delete-btn"  onclick="deleteExpense(${transaction.id
         })">x</button>
   `;
 
@@ -107,40 +78,49 @@ function addTransactionDOM(transaction) {
 }
 
 // Update the balance, income and expense
-function updateValues(totalPrice) {
-    // const amounts = transactions.map(transaction => transaction.amount);
-
-    // const total = amounts.reduce((acc, item) => (acc += item), 0).toFixed(2);
-
-    // const income = amounts
-    //     .filter(item => item > 0)
-    //     .reduce((acc, item) => (acc += item), 0)
-    //     .toFixed(2);
-
-    // const expense = (
-    //     amounts.filter(item => item < 0).reduce((acc, item) => (acc += item), 0) *
-    //     -1
-    // ).toFixed(2);
-
-    // balance.innerText = `₹${total}`;
-    // money_plus.innerText = `₹${income}`;
-    money_minus.innerText = `₹${totalPrice}`;
+function updateValues(total, expense, income) {
+         
+    balance.innerText = `₹${total}`;
+    money_plus.innerText = `₹${income}`;
+    money_minus.innerText = `₹${expense}`;
 }
 
-// Remove transaction by ID
-function removeTransaction(id) {
-    transactions = transactions.filter(transaction => transaction.id !== id);
+// Remove expense by ID
+function deleteExpense(expenseid) {
+    const token = localStorage.getItem('token')
+    axios.delete(`http://localhost:3000/expense/delete-expense/${expenseid}`, {headers : {"Authorization": token}})
 
-    updateLocalStorage();
-
-    init();
+    removeExpensefromUI();   
+       
 }
 
-// Update local storage transactions
-// function updateLocalStorage() {
-//     localStorage.setItem('transactions', JSON.stringify(transactions));
-// }
+function removeExpensefromUI(){   
+    list.innerHTML = '';
+    onload();
+}
 
+function onload(){
+   
+        const token = localStorage.getItem('token') 
+        axios.get('http://localhost:3000/expense/get-expenses', {headers : {"Authorization": token}})
+        .then((response)=>{
+          for(var i = 0;i<response.data.allExpenses.length;i++)
+          {
+            if(Number(response.data.allExpenses[i].amount < 0))
+            expense -= Number(response.data.allExpenses[i].amount) 
+            else
+            income += Number(response.data.allExpenses[i].amount) 
+            totalPrice += Number(response.data.allExpenses[i].amount);
+          }
+          updateValues(totalPrice,expense,income)
 
-
+          for(var i = 0;i<response.data.allExpenses.length;i++){ 
+                console.log(response.data.allExpenses[i])           
+                addTransactionDOM(response.data.allExpenses[i]);
+            }
+        })
+        .catch((error)=>{
+            console.log(error);
+    })
+}
 form.addEventListener('submit', addTransaction);

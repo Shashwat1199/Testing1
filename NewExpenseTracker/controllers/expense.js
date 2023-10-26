@@ -2,11 +2,11 @@ const Expense = require('../models/expense');
 
 exports.getExpense = async(req,res,next)=>{   
   try{
-      const expenses = await Expense.findAll();      
+      const expenses = await Expense.findAll({where :{userId: req.user.id}});      
       res.status(200).json({allExpenses:expenses});
   }
   catch(error){
-      console.log("Didn't hit "+ error);
+      console.log("Didn't hit-"+ error);
   }
 };
   
@@ -17,7 +17,8 @@ exports.postExpense = async(req,res)=>{
     const description = req.body.description; 
     const category = req.body.category; 
     try{
-    const data = await Expense.create({amount : amount, description : description, category : category})
+    console.log("User ID is coming>>> " + req.user.id);  
+    const data = await Expense.create({amount : amount, description : description, category : category, userId:req.user.id})
     res.status(200).json({newExpenseDetail:data}); 
     }
     catch(err){
@@ -33,8 +34,9 @@ exports.postExpense = async(req,res)=>{
 
  exports.deleteExpense = async(req,res)=>{
     try{
-     const uID = req.params.id;
-     await Expense.destroy({where : {id : uID}});
+     const eID = req.params.expenseid;
+     const result = await Expense.destroy({where : {id : eID, userId: req.user.id}});
+     console.log("Async >>> " + result);
      res.sendStatus(200);
  }
  catch(err)
