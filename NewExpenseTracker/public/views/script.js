@@ -6,6 +6,7 @@ const form = document.getElementById('form');
 const text = document.getElementById('text');
 const categ = document.getElementById('categ');
 const amount = document.getElementById('amount');
+const premBtn = document.getElementById('rzp-button1')
 let totalPrice = 0;
 let income = 0;
 let expense = 0;
@@ -16,6 +17,44 @@ window.addEventListener('DOMContentLoaded',()=>{
 
    onload();
 });
+
+
+//Premium User
+async function premiumUser(e){
+    e.preventDefault();
+
+    const token = localStorage.getItem('token');
+    console.log("Working upto here");
+    const response = await axios.get('http://localhost:3000/purchase/premium-user',{headers:{"Authorization": token}});
+
+    console.log("Authorization Done Coming here " + response);
+
+    var options = {
+        "key": response.data.key_id,
+        "order_id" : response.data.order.id,           
+
+        "handler": async function (response) {
+            console.log("Actually here " + options.key + "&"); 
+            await axios.post('http://localhost:3000/purchase/update-transaction-status',{
+                
+                order_id : options.order_id,
+                payment_id : response.razorpay_payment_id,
+            },{headers: {"Authorization" : token}})
+            
+            alert('You are a premium user now');            
+        }     
+    };
+    console.log("Actually here " + options);
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+    e.preventDefault();
+
+    rzp1.on('payment.failed', function(response){
+        console.log("This is response " + response);
+        alert('Something went wrong');
+    });
+
+ }
 
 
 // Add transaction
@@ -124,3 +163,4 @@ function onload(){
     })
 }
 form.addEventListener('submit', addTransaction);
+premBtn.addEventListener('click', premiumUser);

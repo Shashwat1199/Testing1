@@ -1,4 +1,4 @@
-const User = require('../models/sign-up');
+const User = require('../models/users');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const secretKey = 'secretkey';
@@ -9,14 +9,14 @@ try
 const {email,password} = req.body;
 
 const user = await User.findAll({ where : {email}})
-console.log(user[0].email)
+//console.log(user[0].email)
 if(user.length > 0)
 {
     bcrypt.compare(password, user[0].password, (err, result)=>{
      
         function generateAccessToken(id)
         {
-            console.log(">>>>>>>>>>>>coming here id is " + id)
+            //console.log(">>>>>>>>>>>>coming here id is " + id)
             try{
             return jwt.sign({userId : id}, secretKey)
             }

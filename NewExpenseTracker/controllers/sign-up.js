@@ -1,4 +1,4 @@
-const User = require('../models/sign-up');
+const User = require('../models/users');
 const bcrypt = require('bcrypt');
 function isstringInvalid(string)
   {
@@ -24,7 +24,7 @@ exports.postUser = async(req,res)=>{
       try{
       bcrypt.hash(password, saltrounds, async(err, hash)=>{
         const data = await User.create({name : name, email : email ,password : hash}) 
-        //console.log(err);
+        console.log("Dekho isse >>>>>>>" +  err);
         res.status(200).json({newUserDetail:data}); 
        })        
       }      
