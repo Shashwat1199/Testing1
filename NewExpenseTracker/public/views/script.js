@@ -18,7 +18,6 @@ window.addEventListener('DOMContentLoaded',()=>{
    onload();
 });
 
-
 //Premium User
 async function premiumUser(e){
     e.preventDefault();
@@ -34,26 +33,27 @@ async function premiumUser(e){
         "order_id" : response.data.order.id,           
 
         "handler": async function (response) {
-            console.log("Actually here " + options.key + "&"); 
-            await axios.post('http://localhost:3000/purchase/update-transaction-status',{
-                
+           const res = await axios.post('http://localhost:3000/purchase/update-transaction-status',{                
                 order_id : options.order_id,
                 payment_id : response.razorpay_payment_id,
             },{headers: {"Authorization" : token}})
             
-            alert('You are a premium user now');            
+            alert('You are a premium user now'); 
+            localStorage.setItem('token', res.data.token)  
+            console.log(res.data);
+            showPremiumUserMessage();             
         }     
     };
-    console.log("Actually here " + options);
+
+    //console.log("Actually here " + options);
     var rzp1 = new Razorpay(options);
     rzp1.open();
     e.preventDefault();
 
     rzp1.on('payment.failed', function(response){
-        console.log("This is response " + response);
+        //console.log("This is response " + response);
         alert('Something went wrong');
     });
-
  }
 
 
@@ -138,9 +138,66 @@ function removeExpensefromUI(){
     onload();
 }
 
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+function showPremiumUserMessage(){
+
+    premBtn.style.visibility = 'hidden';                
+    document.getElementById('message').innerHTML = "You are a Premium User";
+    document.getElementById('message').style.color  = 'white';
+    document.getElementById('message').style.backgroundColor  = 'green';
+
+    var leadBtn = document.createElement("button");
+  
+    //leadBtn.id = "premium";
+    //leadBtn.className = "premium-user-container";
+    //leadBtn.type = "button";
+    leadBtn.className = "btn btn-secondary btn-sm float-right ShowLeaderBoard"
+    // leadBtn.style.color = "white";
+    // leadBtn.style.backgroundColor = "green";   
+    // leadBtn.style.fontSize = '100%'
+    // //leadBtn.style.marginLeft = '30%'
+    // leadBtn.style.marginRight = '30%'
+    // leadBtn.style.marginTop = '3%'
+     leadBtn.innerHTML = "Show LeaderBoard"
+
+
+    const doc = document.getElementById('premDiv')
+    doc.appendChild(leadBtn);
+
+    leadBtn.onclick = async() => {
+        
+        const token = localStorage.getItem('token');
+        const userLeaderBoardArray = await axios.get('http://localhost:3000/purchase/showLeaderBoard', {headers : {"Authorization": token}})  
+        
+        var leaderboardElem = document.getElementById('leaderboard');
+        leaderboardElem.innerHTML += '<h3> Leader Board </h1>'
+        userLeaderBoardArray.data.userLeaderBoardDetails.forEach((userDetails) => {
+            console.log(userDetails)
+            leaderboardElem.innerHTML += `<li> Name : ${userDetails.name} <span> Total Expense : ${userDetails.total_cost}`
+        });  
+        
+        //console.log(userLeaderBoardArray);
+  }
+}
+
 function onload(){
    
         const token = localStorage.getItem('token') 
+        const decodeToken = parseJwt(token)
+        const isPremiumUser = decodeToken.ispremiumuser;
+        if(isPremiumUser){
+            showPremiumUserMessage();
+        }
+
         axios.get('http://localhost:3000/expense/get-expenses', {headers : {"Authorization": token}})
         .then((response)=>{
           for(var i = 0;i<response.data.allExpenses.length;i++)

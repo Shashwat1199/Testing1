@@ -1,8 +1,7 @@
 const Razorpay = require('razorpay');
 const Order = require('../models/orders')
+const userController = require('../controllers/user')
 require('dotenv').config();
-//const process = require('../.env');
-//const { default: orders } = require('razorpay/dist/types/orders');
 
 exports.purchasePremium = async(req, res) => {
 
@@ -12,11 +11,6 @@ exports.purchasePremium = async(req, res) => {
     key_secret: process.env.RAZORPAY_KEY_SECRET,
   });
  
-  // const options = {
-  //   amount: '2500', 
-  //   currency: 'INR'
-  // };
-
  const amount = 2500;
   try {
      rzp.orders.create({amount, currency : "INR"},(err,order)=>{
@@ -56,7 +50,7 @@ exports.updateTransactionStatus = async (req, res) => {
      const promise2 = await req.user.update({ispremiumuser : true})
      //console.log("Reaching upto here and>> " + order);
      Promise.all([promise1, promise2]).then(()=>{
-     return res.status(202).json({success: true , message : "Tranasaction Successfull"});
+     return res.status(202).json({success: true , message : "Tranasaction Successfull", token: userController.generateAccessToken(req.user.id, true)});
     }).catch((err)=>{
       throw new Error(err);
     })

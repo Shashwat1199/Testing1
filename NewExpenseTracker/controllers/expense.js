@@ -36,7 +36,7 @@ exports.postExpense = async(req,res)=>{
     try{
      const eID = req.params.expenseid;
      const result = await Expense.destroy({where : {id : eID, userId: req.user.id}});
-     //console.log("Async >>> " + result);
+     console.log("Async >>> " + result);
      res.sendStatus(200);
  }
  catch(err)
