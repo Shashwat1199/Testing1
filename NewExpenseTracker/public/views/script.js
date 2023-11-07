@@ -180,9 +180,12 @@ function showPremiumUserMessage(){
         
         var leaderboardElem = document.getElementById('leaderboard');
         leaderboardElem.innerHTML += '<h3> Leader Board </h1>'
-        userLeaderBoardArray.data.userLeaderBoardDetails.forEach((userDetails) => {
+        
+        console.log(userLeaderBoardArray)
+
+        userLeaderBoardArray.data.leaderboardofusers.forEach((userDetails) => {
             console.log(userDetails)
-            leaderboardElem.innerHTML += `<li> Name : ${userDetails.name} <span> Total Expense : ${userDetails.total_cost}`
+            leaderboardElem.innerHTML += `<li> Name : ${userDetails.name}   <span> Total Expense : ${userDetails.total_cost} </span>`
         });  
         
         //console.log(userLeaderBoardArray);
