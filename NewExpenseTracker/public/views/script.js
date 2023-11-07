@@ -157,18 +157,8 @@ function showPremiumUserMessage(){
 
     var leadBtn = document.createElement("button");
   
-    //leadBtn.id = "premium";
-    //leadBtn.className = "premium-user-container";
-    //leadBtn.type = "button";
-    leadBtn.className = "btn btn-secondary btn-sm float-right ShowLeaderBoard"
-    // leadBtn.style.color = "white";
-    // leadBtn.style.backgroundColor = "green";   
-    // leadBtn.style.fontSize = '100%'
-    // //leadBtn.style.marginLeft = '30%'
-    // leadBtn.style.marginRight = '30%'
-    // leadBtn.style.marginTop = '3%'
-     leadBtn.innerHTML = "Show LeaderBoard"
-
+    leadBtn.className = "btn btn-secondary btn-sm float-right ShowLeaderBoard"   
+    leadBtn.innerHTML = "Show LeaderBoard"
 
     const doc = document.getElementById('premDiv')
     doc.appendChild(leadBtn);
@@ -180,12 +170,12 @@ function showPremiumUserMessage(){
         
         var leaderboardElem = document.getElementById('leaderboard');
         leaderboardElem.innerHTML += '<h3> Leader Board </h1>'
-        
+
         console.log(userLeaderBoardArray)
 
         userLeaderBoardArray.data.leaderboardofusers.forEach((userDetails) => {
             console.log(userDetails)
-            leaderboardElem.innerHTML += `<li> Name : ${userDetails.name}   <span> Total Expense : ${userDetails.total_cost} </span>`
+            leaderboardElem.innerHTML += `<li> Name : ${userDetails.name}   <span> Total Expense : ${userDetails.total_expense} </span>`
         });  
         
         //console.log(userLeaderBoardArray);

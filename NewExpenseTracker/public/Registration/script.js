@@ -48,8 +48,7 @@ function onSubmit1(e)
     console.log(myObj)
     axios.post("http://localhost:3000/user/sign-up", myObj) 
     .then((response)=>{
-       console.log("Gone inside ");     
-      
+       console.log("Gone inside ");           
     })
     .catch((err)=>{
         console.log("Coming in error block " +err);
