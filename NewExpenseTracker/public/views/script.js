@@ -1,23 +1,55 @@
 const balance = document.getElementById('balance');
 const money_plus = document.getElementById('money-plus');
 const money_minus = document.getElementById('money-minus');
-const list = document.getElementById('list');
 const form = document.getElementById('form');
 const text = document.getElementById('text');
 const categ = document.getElementById('categ');
 const amount = document.getElementById('amount');
 const premBtn = document.getElementById('rzp-button1')
+const userlist = document.getElementById('userlist');
 let totalPrice = 0;
 let income = 0;
 let expense = 0;
 
-
 //DOM content loaded
 window.addEventListener('DOMContentLoaded',()=>{
-
+   
    onload();
 });
+async function onload(){
 
+    const token = localStorage.getItem('token') 
+    const decodeToken = parseJwt(token)
+    const isPremiumUser = decodeToken.ispremiumuser;
+    if(isPremiumUser){
+        showPremiumUserMessage();
+    }
+    
+    try{
+    const response = await axios.get('http://localhost:3000/expense/get-expenses', {headers : {"Authorization": token}})
+
+     result(response);    
+     function result(response){
+      for(var i = 0;i<response.data.allExpenses.length;i++)
+      {
+        if(Number(response.data.allExpenses[i].amount < 0))
+        expense -= Number(response.data.allExpenses[i].amount) 
+        else
+        income += Number(response.data.allExpenses[i].amount) 
+        totalPrice += Number(response.data.allExpenses[i].amount);
+      }
+      updateValues(totalPrice,expense,income)
+
+      for(var i = 0;i<response.data.allExpenses.length;i++){ 
+            console.log(response.data.allExpenses[i])           
+            addTransactionDOM(response.data.allExpenses[i]);
+        }
+    }
+}
+    catch(error){
+        console.log(error);
+}
+}
 //Premium User
 async function premiumUser(e){
     e.preventDefault();
@@ -125,17 +157,19 @@ function updateValues(total, expense, income) {
 }
 
 // Remove expense by ID
-function deleteExpense(expenseid) {
+async function deleteExpense(expenseid) {
+    //e.preventDefault();
     const token = localStorage.getItem('token')
-    axios.delete(`http://localhost:3000/expense/delete-expense/${expenseid}`, {headers : {"Authorization": token}})
+    console.log(expenseid)
+    const p = await axios.delete(`http://localhost:3000/expense/delete-expense/${expenseid}`, {headers : {"Authorization": token}})
 
-    removeExpensefromUI();   
-       
+   removeExpensefromUI();           
 }
 
 function removeExpensefromUI(){   
-    list.innerHTML = '';
-    onload();
+   
+    //list.innerHTML = '';
+    reload(); 
 }
 
 function parseJwt (token) {
@@ -182,35 +216,6 @@ function showPremiumUserMessage(){
   }
 }
 
-function onload(){
-   
-        const token = localStorage.getItem('token') 
-        const decodeToken = parseJwt(token)
-        const isPremiumUser = decodeToken.ispremiumuser;
-        if(isPremiumUser){
-            showPremiumUserMessage();
-        }
-
-        axios.get('http://localhost:3000/expense/get-expenses', {headers : {"Authorization": token}})
-        .then((response)=>{
-          for(var i = 0;i<response.data.allExpenses.length;i++)
-          {
-            if(Number(response.data.allExpenses[i].amount < 0))
-            expense -= Number(response.data.allExpenses[i].amount) 
-            else
-            income += Number(response.data.allExpenses[i].amount) 
-            totalPrice += Number(response.data.allExpenses[i].amount);
-          }
-          updateValues(totalPrice,expense,income)
-
-          for(var i = 0;i<response.data.allExpenses.length;i++){ 
-                console.log(response.data.allExpenses[i])           
-                addTransactionDOM(response.data.allExpenses[i]);
-            }
-        })
-        .catch((error)=>{
-            console.log(error);
-    })
-}
+userlist.addEventListener('click', deleteExpense)
 form.addEventListener('submit', addTransaction);
 premBtn.addEventListener('click', premiumUser);

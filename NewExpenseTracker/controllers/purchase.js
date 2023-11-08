@@ -13,21 +13,20 @@ exports.purchasePremium = async(req, res) => {
  
  const amount = 2500;
   try {
-     rzp.orders.create({amount, currency : "INR"},(err,order)=>{
+     rzp.orders.create({amount, currency : "INR"},async(err,order)=>{
       if(err){
       console.log("Here's the error >> " + err + "order>> "+ order);  
       throw new Error(JSON.stringify(err));
       }
 
-      //console.log("Order is with id >>> " + order.id);
-      req.user.createOrder({orderid: order.id, status: 'PENDING'}).then(()=>{
-        //console.log("Working here man!")
-        return res.status(201).json({order, key_id : rzp.key_id});
-      })
-      .catch(err=>{
-      //console.log("Error is here>>> " +  err);
+      try{
+      const createOrder = await req.user.createOrder({orderid: order.id, status: 'PENDING'})
+      return res.status(201).json({order, key_id : rzp.key_id});
+      }
+      catch(err){
+      console.log("Error is here>>> " +  err);
       throw new Error(JSON.stringify(err));
-      })
+      }
 
      });     
   } 
@@ -41,14 +40,13 @@ exports.updateTransactionStatus = async (req, res) => {
   console.log("going inside in UTS") 
   try{
      const {payment_id, order_id} = req.body;
-     //console.log("Reaching upto here and>> " + req.body);
 
      const order = await Order.findOne({where: {orderid : order_id}})
      //console.log("Reaching upto here &>> " + order);
 
      const promise1 = await order.update({paymentid : payment_id, status : 'SUCCESSFUL'})
      const promise2 = await req.user.update({ispremiumuser : true})
-     //console.log("Reaching upto here and>> " + order);
+     
      Promise.all([promise1, promise2]).then(()=>{
      return res.status(202).json({success: true , message : "Tranasaction Successfull", token: userController.generateAccessToken(req.user.id, true)});
     }).catch((err)=>{

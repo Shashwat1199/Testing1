@@ -18,10 +18,10 @@ function generateAccessToken(id, ispremiumuser)
 {
     try{
     return jwt.sign({userId : id, ispremiumuser}, secretKey)
-    }
+    } 
     catch(err)
     {
-        console.log("JSON way errror " + err);
+    console.log("JSON way errror " + err);
     }
 }
 exports.login = async(req, res)=>
@@ -31,7 +31,7 @@ try
 const {email,password} = req.body;
 
 const user = await User.findAll({ where : {email}})
-//console.log(user[0].email)
+
 if(user.length > 0)
 {
     bcrypt.compare(password, user[0].password, (err, result)=>{     
@@ -49,7 +49,6 @@ if(user.length > 0)
   {
     console.log("here's the req error "+ err);
   }
-
 }
     else
         return res.status(400).json({success : false, message :"Password is incorrect"})
@@ -60,7 +59,7 @@ else
     return res.status(404).json({success : false, message :"User doesn't exist"})
 }
 catch(err){
-    //console.log("->->->->->->->->->Coming here also")
+    //console.log("->->->->->->->->->Coming here also "+ err)
     res.status(500).json({message : err, success : false})
 }
 }
@@ -88,7 +87,7 @@ exports.postUser = async(req,res)=>{
       try{
       bcrypt.hash(password, saltrounds, async(err, hash)=>{
         const data = await User.create({name : name, email : email ,password : hash}) 
-        //console.log("Dekho isse >>>>>>>" +  err);
+        
         res.status(200).json({newUserDetail:data}); 
        })        
       }      
