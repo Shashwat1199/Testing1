@@ -1,6 +1,6 @@
 const forms = document.querySelector(".forms"),
-      pwShowHide = document.querySelectorAll(".eye-icon"),
-      links = document.querySelectorAll(".link");
+    pwShowHide = document.querySelectorAll(".eye-icon"),
+    links = document.querySelectorAll(".link");
 
 const myForm1 = document.querySelector('#my-form');      
 myForm1.addEventListener('submit', onSubmit1);

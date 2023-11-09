@@ -14,10 +14,10 @@ exports.getExpense = async(req,res,next)=>{
 };
 
 exports.postExpense = async(req,res)=>{
-
+ 
+  const t = await sequelize.transaction();
   try{
-    const t = await sequelize.transaction();
-    
+        
     const amount = req.body.amount;
     const description = req.body.description; 
     const category = req.body.category; 
@@ -50,23 +50,30 @@ exports.postExpense = async(req,res)=>{
   }
 
  exports.deleteExpense = async(req,res)=>{
+
+    const t = await sequelize.transaction();
     try{
      const eID = req.params.expenseid;
      console.log("This is scoming in req>>>> " + req.user);
+
+     const currentExpense = await Expense.findByPk(eID);
      const result = await Expense.destroy({where : {id : eID, userId: req.user.id}});
-//      const totalExpense = req.user.total_expense - Number(amount);
-//     //console.log("Here it is >>>> " + totalExpense)
-//     const resultt = await User.update({
-//       total_expense : totalExpense
-//     },{
-//       where :{id:req.user.id},
-//       //transaction : t
-//     })
-//      console.log("Async >>> " + result);
-//      res.sendStatus(200);
+     console.log("Expense ID is>>>>>> " + eID)       
+
+     const totalExpense = req.user.total_expense - Number(currentExpense.amount);
+     //console.log("Here it is >>>> " + totalExpense)
+    const resultt = await User.update({
+      total_expense : totalExpense
+    },{
+      where :{id:req.user.id},
+      transaction : t
+    })
+     console.log("Async >>> " + result);
+     res.sendStatus(200);
   }
  catch(err)
 {
+  await t.rollback();
   console.log(err);
 }
 }
