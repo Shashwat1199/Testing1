@@ -1,5 +1,3 @@
-const { response } = require("express");
-
 const forms = document.querySelector(".forms"),
     pwShowHide = document.querySelectorAll(".eye-icon"),
     links = document.querySelectorAll(".link");
@@ -10,8 +8,6 @@ myForm1.addEventListener('submit', onSubmit1);
 const myForm2 = document.querySelector('#login-form');      
 myForm2.addEventListener('submit', onSubmit2);
 
-const myForm3 = document.querySelector('#forgot-pass');      
-myForm2.addEventListener('submit', onSubmit3);
 
 pwShowHide.forEach(eyeIcon => {
     eyeIcon.addEventListener("click", () => {
@@ -88,14 +84,3 @@ function onSubmit2(e)
     }) 
 }
 
-async function onSubmit3(e)
-{
-    e.preventDefault();
-
-    const email = e.target.email.value;
-
-    axios.post("http://localhost:3000/password/forgot-password", email)
-    .then((response)=>{
-        
-    })
-}

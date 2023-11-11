@@ -70,6 +70,7 @@ function isstringInvalid(string)
     else
     return false;
   }
+  
 exports.postUser = async(req,res)=>{
   
     try{

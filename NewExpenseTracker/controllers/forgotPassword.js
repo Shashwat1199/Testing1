@@ -1,85 +1,99 @@
 const Sib = require('sib-api-v3-sdk');
-require('dotenv').config();
-//const client = Sib.ApiClient.instance
-const uuid = require('uuid');
-const sgMail = require('@sendgrid/mail');
-const bcrypt = require('bcrypt');
-
 const User = require('../models/users');
+const client = Sib.ApiClient.instance
+const uuid = require('uuid');
+require('dotenv').config();
+const bcrypt = require('bcrypt');
 const Forgotpassword = require('../models/forgotpassword');
+const apiKey = client.authentications['api-key']
+apiKey.apiKey = process.env.SENGRID_API_KEY
+const path = require('path');
+const rootDir = require('../util/path')
+const transEmailApi = new Sib.TransactionalEmailsApi()
 
-const forgotpassword = async (req, res) => {
+
+exports.forgotpassword = async (req, res) => {
     try {
-        const { email } =  req.body;
-        const user = await User.findOne({where : { email }});
+       
+        const email  =  req.body.email;
+        const sender = {
+            email : 'shashwatmzpvns@gmail.com',
+            name : 'Shashwat Mishra'
+        };
+        const receivers = [
+            {
+                email : req.body.email
+            }
+        ]
+        console.log("Entering here " + email)
+        const user = await User.findOne({where : {email }});
         if(user){
             const id = uuid.v4();
             user.createForgotpassword({ id , active: true })
                 .catch(err => {
+                    console.log("In error block ")
                     throw new Error(err)
                 })
 
-            sgMail.setApiKey(process.env.SENGRID_API_KEY)
+            console.log("Coming here forgot password >>>> ")    
+            //  const msg = {
+            //     sender: 'shashwatmzpvns@gmail.com', // Change to your verified sender
+            //     to: receivers, // Change to your recipient                           
+            //     subject: 'Sending with SendinBlue is Fun',
+            //     textContent: `and easy to do anywhere, even with Node.js`,
+            //     // html: `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
+            // }
 
-            const msg = {
-                to: email, // Change to your recipient
-                from: 'shashwatsanskar@gmail.com', // Change to your verified sender
+            try{
+            transEmailApi
+            .sendTransacEmail({
+                sender, 
+                to: receivers,                            
                 subject: 'Sending with SendinBlue is Fun',
-                text: 'and easy to do anywhere, even with Node.js',
-                html: `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`,
+                textContent: "and easy to do anywhere, even with Node.js",
+                htmlContent : `<a href="http://localhost:3000/password/resetpassword/${id}">Reset password</a>`
+            })
             }
 
-            sgMail
-            .send(msg)
-            .then((response) => {
-
-                // console.log(response[0].statusCode)
-                // console.log(response[0].headers)
-                return res.status(response[0].statusCode).json({message: 'Link to reset password sent to your mail ', sucess: true})
-
-            })
-            .catch((error) => {
+            catch(error) {
+                console.log("Thats Error ???>>>>>>" + error)
                 throw new Error(error);
-            })
-
-            //send mail
-        }else {
-            throw new Error('User doesnt exist')
-        }
-    } catch(err){
+            }
+    }
+}
+     catch(err){
         console.error(err)
         return res.json({ message: err, sucess: false });
     }
 
 }
 
-const resetpassword = (req, res) => {
+exports.resetpassword = (req, res) => {
     const id =  req.params.id;
     Forgotpassword.findOne({ where : { id }}).then(forgotpasswordrequest => {
         if(forgotpasswordrequest){
             forgotpasswordrequest.update({ active: false});
             res.status(200).send(`<html>
-                                    <script>
-                                        function formsubmitted(e){
-                                            e.preventDefault();
-                                            console.log('called')
-                                        }
-                                    </script>
+            <script>
+                function formsubmitted(e){
+                    e.preventDefault();
+                    console.log('called')
+                }
+            </script>
 
-                                    <form action="/password/updatepassword/${id}" method="get">
-                                        <label for="newpassword">Enter New password</label>
-                                        <input name="newpassword" type="password" required></input>
-                                        <button>reset password</button>
-                                    </form>
-                                </html>`
-                                )
+            <form action="/password/updatepassword/${id}" method="get">
+                <label for="newpassword">Enter New password</label>
+                <input name="newpassword" type="password" required></input>
+                <button>Reset password</button>
+            </form>
+        </html>`)
+            //res.sendFile(path.join(rootDir,'public/Registration/forgotPass.html'))
             res.end()
-
         }
     })
 }
 
-const updatepassword = (req, res) => {
+exports.updatepassword = (req, res) => {
 
     try {
         const { newpassword } = req.query;
@@ -119,8 +133,8 @@ const updatepassword = (req, res) => {
 }
 
 
-module.exports = {
-    forgotpassword,
-    updatepassword,
-    resetpassword
-}
+// module.exports = {
+//     forgotpassword,
+//     updatepassword,
+//     resetpassword
+// }
