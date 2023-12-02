@@ -55,10 +55,10 @@ async function premiumUser(e){
     e.preventDefault();
 
     const token = localStorage.getItem('token');
-    console.log("Working upto here");
+    //console.log("Working upto here");
     const response = await axios.get('http://localhost:3000/purchase/premium-user',{headers:{"Authorization": token}});
 
-    console.log("Authorization Done Coming here " + response);
+    //console.log("Authorization Done Coming here " + response);
 
     var options = {
         "key": response.data.key_id,
@@ -72,7 +72,7 @@ async function premiumUser(e){
             
             alert('You are a premium user now'); 
             localStorage.setItem('token', res.data.token)  
-            console.log(res.data);
+            //console.log(res.data);
             showPremiumUserMessage();             
         }     
     };
@@ -102,7 +102,6 @@ function addTransaction(e) {
             amount: +amount.value,
             category: categ.value
         };
-
         
     const token = localStorage.getItem('token')
     axios.post("http://localhost:3000/expense/add-expense", transaction, {headers : {"Authorization": token}})
@@ -196,6 +195,40 @@ function showPremiumUserMessage(){
 
     const doc = document.getElementById('premDiv')
     doc.appendChild(leadBtn);
+
+
+    var downBtn = document.createElement("button");
+    
+    downBtn.className = "btn btn-secondary btn-sm float-right Download"   
+    downBtn.innerHTML = "Download File"
+    
+    //const doc = document.getElementById('premDiv')
+    doc.appendChild(downBtn);
+
+    downBtn.onclick = async() => {
+
+        const token = localStorage.getItem('token');
+       
+        axios.get('http://localhost:3000/user/download', { headers: {"Authorization" : token} })
+        .then((response) => {
+            if(response.status === 201){
+                //the bcakend is essentially sending a download link
+                //which if we open in browser, the file would download
+                var a = document.createElement("a");
+                a.href = response.data.fileUrl;
+                a.download = 'myexpense.csv';
+                a.click();
+            } else {
+                throw new Error(response.data.message)
+            }
+    
+        })
+        .catch((err) => {
+            showError(err)
+        });
+        var leaderboardElem = document.getElementById('leaderboard');
+        leaderboardElem.innerHTML += '<h3> Leader Board </h1>'
+    }
 
     leadBtn.onclick = async() => {
         
