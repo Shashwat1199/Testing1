@@ -177,7 +177,7 @@ function parseJwt (token) {
     var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
     }).join(''));
-
+    
     return JSON.parse(jsonPayload);
 }
 
@@ -196,7 +196,7 @@ function showPremiumUserMessage(){
     const doc = document.getElementById('premDiv')
     doc.appendChild(leadBtn);
 
-
+    
     var downBtn = document.createElement("button");
     
     downBtn.className = "btn btn-secondary btn-sm float-right Download"   
@@ -229,7 +229,7 @@ function showPremiumUserMessage(){
         var leaderboardElem = document.getElementById('leaderboard');
         leaderboardElem.innerHTML += '<h3> Leader Board </h1>'
     }
-
+    
     leadBtn.onclick = async() => {
         
         const token = localStorage.getItem('token');

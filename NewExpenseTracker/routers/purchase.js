@@ -10,5 +10,7 @@ router.post('/purchase/update-transaction-status' ,userAuthentication.Authentica
 
 router.get('/purchase/showLeaderBoard' ,userAuthentication.Authenticate, premiumFeature.getUserLeaderBoard);
 
+router.get('/purchase/download' ,userAuthentication.Authenticate, premiumFeature.Download);
+
 
 module.exports = router;
