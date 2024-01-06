@@ -37,7 +37,7 @@ exports.purchasePremium = async(req, res) => {
 } 
 
 exports.updateTransactionStatus = async (req, res) => {
-  console.log("going inside in UTS") 
+  //console.log("going inside in UTS") 
   try{
      const {payment_id, order_id} = req.body;
 
@@ -54,7 +54,7 @@ exports.updateTransactionStatus = async (req, res) => {
     })
   }
   catch (err) {
-    //console.log("Update Transaction Status error " +  err);
+     //console.log("Update Transaction Status error " +  err);
     res.status(403).json({ message: 'Something went wrongggg', error:err });
   }
 };

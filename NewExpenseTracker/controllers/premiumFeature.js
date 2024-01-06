@@ -19,3 +19,22 @@ exports.getUserLeaderBoard = async(req,res) => {
         res.status(500).json(err)
     }
 }
+
+exports.downloadExpense = async(req,res) => {
+
+    try{
+        const leaderboardofusers = await User.findAll({
+           
+            group : ['user.id'],
+            order: [['total_expense', 'DESC']]
+        });                
+
+        leaderboardofusers.sort((a,b) => b.total_cost - a.total_cost)
+        res.status(200).json({leaderboardofusers})
+    }
+    catch(err){
+        console.log(err);
+        res.status(500).json(err)
+    }
+}
+
