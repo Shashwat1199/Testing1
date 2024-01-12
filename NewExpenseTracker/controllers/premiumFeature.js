@@ -23,6 +23,9 @@ exports.getUserLeaderBoard = async(req,res) => {
 exports.downloadExpense = async(req,res) => {
 
     try{
+        if(!req.user.ispremiumuser){
+            return res.status(401).json({ success: false, message: 'User is not a premium User'})
+        }
         const leaderboardofusers = await User.findAll({
            
             group : ['user.id'],
